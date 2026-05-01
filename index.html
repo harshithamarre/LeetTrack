@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeetTrack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f5f5f4;
+      --bg-tertiary: #efefed;
+      --text-primary: #1a1a18;
+      --text-secondary: #6b6b67;
+      --text-tertiary: #a8a8a4;
+      --border-light: rgba(0,0,0,0.08);
+      --border-mid: rgba(0,0,0,0.15);
+      --accent: #E8A020;
+      --accent-soft: #FEF3C7;
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1c1c1a;
+        --bg-secondary: #252522;
+        --bg-tertiary: #2a2a27;
+        --text-primary: #f0ede8;
+        --text-secondary: #9ca39f;
+        --text-tertiary: #5a5a56;
+        --border-light: rgba(255,255,255,0.07);
+        --border-mid: rgba(255,255,255,0.12);
+        --accent-soft: rgba(232,160,32,0.15);
+      }
+    }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .container { max-width: 800px; margin: 0 auto; }
+
+    /* ── Header ── */
+    .lc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.75rem;
+    }
+
+    .lc-title {
+      font-size: 21px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.5px;
+    }
+    .lc-title span { color: var(--accent); }
+
+    .lc-sub {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+    }
+
+    /* ── Stat cards ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 1.25rem;
+    }
+
+    .stat-card {
+      background: var(--bg-primary);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 0.9rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: transform 0.15s;
+    }
+    .stat-card:hover { transform: translateY(-1px); }
+
+    .stat-label {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1;
+    }
+
+    .stat-easy   { color: #22C55E; }
+    .stat-medium { color: #E8A020; }
+    .stat-hard   { color: #EF4444; }
+    .stat-total  { color: var(--text-primary); }
+
+    /* ── Panel ── */
+    .panel {
+      background: var(--bg-primary);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .panel-title {
+      font-size: 10px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Add form ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 80px 110px 120px;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-group label {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-mid);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      padding: 0 10px;
+      font-family: 'Sora', sans-serif;
+      font-size: 13px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      height: 36px;
+    }
+
+    .form-group textarea {
+      height: auto;
+      padding: 8px 10px;
+      resize: vertical;
+      min-height: 64px;
+      line-height: 1.5;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(232,160,32,0.12);
+    }
+
+    /* ── Confidence selector ── */
+    .conf-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .conf-group label {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .conf-pills {
+      display: flex;
+      gap: 4px;
+      height: 36px;
+      align-items: center;
+    }
+
+    .conf-pill {
+      flex: 1;
+      height: 30px;
+      border-radius: 20px;
+      border: 0.5px solid var(--border-mid);
+      background: var(--bg-secondary);
+      cursor: pointer;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      transition: all 0.15s;
+      text-align: center;
+      line-height: 28px;
+      user-select: none;
+    }
+    .conf-pill:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+    .conf-pill.active-1 { background: #FEE2E2; border-color: #EF4444; color: #991B1B; }
+    .conf-pill.active-2 { background: #FEF3C7; border-color: #E8A020; color: #92400E; }
+    .conf-pill.active-3 { background: #E0F2FE; border-color: #3B82F6; color: #1D4ED8; }
+    .conf-pill.active-4 { background: #DCFCE7; border-color: #22C55E; color: #15803D; }
+
+    @media (prefers-color-scheme: dark) {
+      .conf-pill.active-1 { background: rgba(239,68,68,0.15); border-color: #EF4444; color: #FCA5A5; }
+      .conf-pill.active-2 { background: rgba(232,160,32,0.15); border-color: #E8A020; color: #FDE68A; }
+      .conf-pill.active-3 { background: rgba(59,130,246,0.15); border-color: #3B82F6; color: #93C5FD; }
+      .conf-pill.active-4 { background: rgba(34,197,94,0.15); border-color: #22C55E; color: #86EFAC; }
+    }
+
+    /* ── Review toggle ── */
+    .review-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-track {
+      width: 36px;
+      height: 20px;
+      border-radius: 10px;
+      background: var(--bg-tertiary);
+      border: 0.5px solid var(--border-mid);
+      position: relative;
+      transition: background 0.2s, border-color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--text-tertiary);
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .review-toggle.on .toggle-track {
+      background: #22C55E;
+      border-color: #22C55E;
+    }
+
+    .review-toggle.on .toggle-thumb {
+      transform: translateX(16px);
+      background: #fff;
+    }
+
+    .toggle-label {
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-secondary);
+    }
+
+    .btn-add {
+      height: 36px;
+      padding: 0 20px;
+      background: var(--text-primary);
+      color: var(--bg-primary);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.15s, transform 0.1s;
+      letter-spacing: 0.3px;
+    }
+    .btn-add:hover  { opacity: 0.78; }
+    .btn-add:active { transform: scale(0.97); }
+
+    /* ── Date nav ── */
+    .date-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .date-nav button.arrow {
+      width: 28px; height: 28px;
+      border: 0.5px solid var(--border-mid);
+      background: transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-primary);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.1s;
+    }
+    .date-nav button.arrow:hover { background: var(--bg-secondary); }
+
+    .date-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .today-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      padding: 3px 10px;
+      border: 0.5px solid var(--border-mid);
+      border-radius: 20px;
+      background: transparent;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: background 0.1s;
+    }
+    .today-btn:hover { background: var(--bg-secondary); }
+
+    /* ── Problem list ── */
+    .problem-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 48px;
+    }
+
+    .problem-item {
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      overflow: hidden;
+      animation: slideIn 0.2s ease;
+      border: 0.5px solid var(--border-light);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .problem-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+    }
+
+    .problem-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-tertiary);
+      min-width: 44px;
+      font-style: italic;
+    }
+
+    .problem-name { flex: 1; font-weight: 500; font-size: 13px; }
+
+    .diff-badge {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      flex-shrink: 0;
+    }
+
+    .diff-easy   { background: #DCFCE7; color: #15803D; }
+    .diff-medium { background: #FEF3C7; color: #92400E; }
+    .diff-hard   { background: #FEE2E2; color: #991B1B; }
+
+    @media (prefers-color-scheme: dark) {
+      .diff-easy   { background: rgba(34,197,94,0.15);  color: #86EFAC; }
+      .diff-medium { background: rgba(232,160,32,0.15); color: #FDE68A; }
+      .diff-hard   { background: rgba(239,68,68,0.15);  color: #FCA5A5; }
+    }
+
+    .conf-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .conf-dot-1 { background: #EF4444; }
+    .conf-dot-2 { background: #E8A020; }
+    .conf-dot-3 { background: #3B82F6; }
+    .conf-dot-4 { background: #22C55E; }
+
+    .review-chip {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 20px;
+      letter-spacing: 0.4px;
+      background: rgba(34,197,94,0.12);
+      color: #15803D;
+      border: 0.5px solid rgba(34,197,94,0.3);
+      flex-shrink: 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .review-chip { color: #86EFAC; background: rgba(34,197,94,0.12); }
+    }
+
+    .problem-meta {
+      padding: 0 12px 9px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .meta-label {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      min-width: 55px;
+    }
+
+    .meta-value {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      font-family: 'Sora', sans-serif;
+    }
+
+    .conf-inline {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .conf-text-1 { color: #EF4444; }
+    .conf-text-2 { color: #E8A020; }
+    .conf-text-3 { color: #3B82F6; }
+    .conf-text-4 { color: #22C55E; }
+
+    .expand-btn {
+      width: 20px; height: 20px;
+      border: none; background: transparent; cursor: pointer;
+      color: var(--text-tertiary);
+      font-size: 11px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 4px;
+      transition: color 0.1s, background 0.1s;
+      flex-shrink: 0;
+    }
+    .expand-btn:hover { color: var(--text-primary); background: var(--border-light); }
+
+    .del-btn {
+      width: 22px; height: 22px;
+      border: none; background: transparent; cursor: pointer;
+      color: var(--text-tertiary);
+      font-size: 16px;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0; line-height: 1;
+      transition: color 0.1s, background 0.1s;
+      flex-shrink: 0;
+    }
+    .del-btn:hover { color: #EF4444; background: #FEE2E2; }
+
+    .problem-detail {
+      padding: 10px 12px 12px;
+      border-top: 0.5px solid var(--border-light);
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeDetail 0.15s ease;
+    }
+
+    .problem-detail.open { display: flex; }
+
+    @keyframes fadeDetail {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .detail-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .detail-label {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-conf-pills {
+      display: flex;
+      gap: 4px;
+    }
+
+    .detail-pill {
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 0.5px solid var(--border-mid);
+      background: var(--bg-tertiary);
+      cursor: pointer;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      transition: all 0.15s;
+    }
+    .detail-pill:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+    .detail-pill.sel-1 { background: #FEE2E2; border-color: #EF4444; color: #991B1B; }
+    .detail-pill.sel-2 { background: #FEF3C7; border-color: #E8A020; color: #92400E; }
+    .detail-pill.sel-3 { background: #E0F2FE; border-color: #3B82F6; color: #1D4ED8; }
+    .detail-pill.sel-4 { background: #DCFCE7; border-color: #22C55E; color: #15803D; }
+
+    @media (prefers-color-scheme: dark) {
+      .detail-pill.sel-1 { background: rgba(239,68,68,0.15); border-color: #EF4444; color: #FCA5A5; }
+      .detail-pill.sel-2 { background: rgba(232,160,32,0.15); border-color: #E8A020; color: #FDE68A; }
+      .detail-pill.sel-3 { background: rgba(59,130,246,0.15); border-color: #3B82F6; color: #93C5FD; }
+      .detail-pill.sel-4 { background: rgba(34,197,94,0.15); border-color: #22C55E; color: #86EFAC; }
+    }
+
+    .detail-review-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .detail-review-info {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-tertiary);
+    }
+
+    .detail-textarea {
+      width: 100%;
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-mid);
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      padding: 8px 10px;
+      font-family: 'Sora', sans-serif;
+      font-size: 12px;
+      line-height: 1.6;
+      resize: vertical;
+      min-height: 60px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .detail-textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(232,160,32,0.10);
+    }
+
+    .detail-save-btn {
+      align-self: flex-end;
+      padding: 5px 14px;
+      background: var(--text-primary);
+      color: var(--bg-primary);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .detail-save-btn:hover { opacity: 0.75; }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-tertiary);
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 1.25rem 0;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Review section ── */
+    .review-section {
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-lg);
+      background: var(--bg-primary);
+      border: 0.5px solid var(--border-light);
+      margin-bottom: 1rem;
+    }
+
+    .review-filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .filter-chip {
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 0.5px solid var(--border-mid);
+      background: transparent;
+      cursor: pointer;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-secondary);
+      transition: all 0.15s;
+    }
+    .filter-chip:hover { background: var(--bg-secondary); }
+    .filter-chip.active { background: var(--text-primary); color: var(--bg-primary); border-color: transparent; }
+
+    .review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .review-item {
+      padding: 9px 12px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border: 0.5px solid var(--border-light);
+    }
+
+    .review-item-meta { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+
+    .review-item-top {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+
+    .review-item-name { font-size: 13px; font-weight: 500; }
+
+    .review-item-note {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .review-item-date {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-tertiary);
+    }
+
+    /* ── Activity Log ── */
+    .activity-section {
+      background: var(--bg-primary);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .activity-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .activity-filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .activity-log {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* Date group */
+    .log-date-group {
+      margin-bottom: 1rem;
+    }
+
+    .log-date-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .log-date-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .log-date-label.today-label {
+      color: var(--accent);
+    }
+
+    .log-date-line {
+      flex: 1;
+      height: 0.5px;
+      background: var(--border-light);
+    }
+
+    .log-date-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-tertiary);
+      white-space: nowrap;
+    }
+
+    .log-entries {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .log-entry {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-light);
+      animation: slideIn 0.2s ease;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .log-entry:hover { background: var(--bg-tertiary); }
+
+    .log-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-tertiary);
+      min-width: 50px;
+      flex-shrink: 0;
+    }
+
+    .log-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-tertiary);
+      min-width: 38px;
+      font-style: italic;
+      flex-shrink: 0;
+    }
+
+    .log-name {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .log-conf-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .log-review-chip {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 20px;
+      background: rgba(34,197,94,0.12);
+      color: #15803D;
+      border: 0.5px solid rgba(34,197,94,0.3);
+      flex-shrink: 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .log-review-chip { color: #86EFAC; }
+    }
+
+    .activity-empty {
+      text-align: center;
+      color: var(--text-tertiary);
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 2rem 0;
+      letter-spacing: 0.3px;
+    }
+
+    .activity-stats-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .activity-stat {
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-secondary);
+    }
+
+    .activity-stat strong {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 620px) {
+      .form-grid { grid-template-columns: 1fr 1fr; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 420px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Separator */
+    .divider {
+      height: 0.5px;
+      background: var(--border-light);
+      margin: 0 0 1rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="lc-header">
+    <div>
+      <div class="lc-title">leet<span>track</span>.dev</div>
+      <div class="lc-sub">dsa grind tracker</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value stat-total" id="s-total">0</div></div>
+    <div class="stat-card"><div class="stat-label">Easy</div><div class="stat-value stat-easy" id="s-easy">0</div></div>
+    <div class="stat-card"><div class="stat-label">Medium</div><div class="stat-value stat-medium" id="s-medium">0</div></div>
+    <div class="stat-card"><div class="stat-label">Hard</div><div class="stat-value stat-hard" id="s-hard">0</div></div>
+  </div>
+
+  <!-- Add Problem -->
+  <div class="panel">
+    <div class="panel-title">Add problem</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Problem name / title</label>
+        <input type="text" id="prob-name" placeholder="e.g. Two Sum" />
+      </div>
+      <div class="form-group">
+        <label>#</label>
+        <input type="number" id="prob-num" placeholder="1" min="1" />
+      </div>
+      <div class="form-group">
+        <label>Difficulty</label>
+        <select id="prob-diff">
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+      <div class="conf-group">
+        <label>Confidence</label>
+        <div class="conf-pills" id="conf-pills">
+          <div class="conf-pill" data-val="1" onclick="selectConf(1)">😓 Low</div>
+          <div class="conf-pill" data-val="2" onclick="selectConf(2)">😐 OK</div>
+          <div class="conf-pill" data-val="3" onclick="selectConf(3)">🙂 Good</div>
+          <div class="conf-pill" data-val="4" onclick="selectConf(4)">🔥 Ace</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label>Notes / concept learnt</label>
+        <textarea id="prob-notes" placeholder="e.g. Sliding window, two-pointer approach. Key insight: …"></textarea>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;padding-bottom:2px">
+        <div class="review-toggle" id="add-review-toggle" onclick="toggleAddReview()" title="Mark for review">
+          <div class="toggle-track"><div class="toggle-thumb"></div></div>
+          <span class="toggle-label">Review later</span>
+        </div>
+        <button class="btn-add" onclick="addProblem()">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day View -->
+  <div class="panel">
+    <div class="date-nav">
+      <button class="arrow" onclick="changeDay(-1)">&#8592;</button>
+      <div class="date-display" id="date-display"></div>
+      <button class="arrow" onclick="changeDay(1)">&#8594;</button>
+      <button class="today-btn" onclick="goToday()">today</button>
+    </div>
+    <div class="problem-list" id="problem-list"></div>
+  </div>
+
+  <!-- Review Queue -->
+  <div class="review-section" id="review-section" style="display:none">
+    <div class="panel-title">📋 Review queue</div>
+    <div class="review-filters" id="review-filters">
+      <button class="filter-chip active" data-filter="all" onclick="setReviewFilter('all',this)">All</button>
+      <button class="filter-chip" data-filter="1" onclick="setReviewFilter('1',this)">😓 Low conf</button>
+      <button class="filter-chip" data-filter="2" onclick="setReviewFilter('2',this)">😐 OK</button>
+      <button class="filter-chip" data-filter="3" onclick="setReviewFilter('3',this)">🙂 Good</button>
+      <button class="filter-chip" data-filter="4" onclick="setReviewFilter('4',this)">🔥 Ace</button>
+    </div>
+    <div class="review-list" id="review-list"></div>
+  </div>
+
+  <!-- Activity Log -->
+  <div class="activity-section">
+    <div class="activity-header">
+      <div class="panel-title" style="margin-bottom:0">🕐 Activity log</div>
+      <div class="activity-filters" id="activity-filters">
+        <button class="filter-chip active" data-filter="all" onclick="setActivityFilter('all',this)">All</button>
+        <button class="filter-chip" data-filter="easy" onclick="setActivityFilter('easy',this)">Easy</button>
+        <button class="filter-chip" data-filter="medium" onclick="setActivityFilter('medium',this)">Medium</button>
+        <button class="filter-chip" data-filter="hard" onclick="setActivityFilter('hard',this)">Hard</button>
+      </div>
+    </div>
+    <div class="activity-stats-row" id="activity-meta"></div>
+    <div class="activity-log" id="activity-log"></div>
+  </div>
+
+</div>
+
+<script>
+  const STORAGE_KEY = 'leettrack-data-v2';
+  let data = {};
+  let selectedDate = todayStr();
+  let addConfidence = 2;
+  let addReview = false;
+  let reviewFilter = 'all';
+  let activityFilter = 'all';
+
+  /* ── Helpers ── */
+  function todayStr() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function parseLocalDate(str) {
+    const [y, m, d] = str.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+
+  function dateToStr(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function formatDate(str) {
+    const d = parseLocalDate(str);
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function formatDateShort(str) {
+    const d = parseLocalDate(str);
+    const today = todayStr();
+    const yesterday = dateToStr(new Date(parseLocalDate(today).setDate(parseLocalDate(today).getDate() - 1)));
+    if (str === today) return 'Today';
+    if (str === yesterday) return 'Yesterday';
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+
+  function formatTime(ts) {
+    if (!ts) return '—';
+    const d = new Date(ts);
+    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+  }
+
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  const CONF_LABELS = { 1: '😓 Low', 2: '😐 OK', 3: '🙂 Good', 4: '🔥 Ace' };
+  const CONF_COLORS = { 1: 'conf-text-1', 2: 'conf-text-2', 3: 'conf-text-3', 4: 'conf-text-4' };
+  const CONF_DOTS   = { 1: 'conf-dot-1', 2: 'conf-dot-2', 3: 'conf-dot-3', 4: 'conf-dot-4' };
+  const CONF_DOT_COLORS = { 1: '#EF4444', 2: '#E8A020', 3: '#3B82F6', 4: '#22C55E' };
+
+  /* ── Storage ── */
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) data = JSON.parse(raw);
+    } catch(e) { data = {}; }
+    render();
+  }
+
+  function saveData() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+  }
+
+  /* ── Add form UI ── */
+  function selectConf(val) {
+    addConfidence = val;
+    document.querySelectorAll('#conf-pills .conf-pill').forEach(el => {
+      el.className = 'conf-pill';
+      if (parseInt(el.dataset.val) === val) el.classList.add('active-' + val);
+    });
+  }
+
+  function toggleAddReview() {
+    addReview = !addReview;
+    const el = document.getElementById('add-review-toggle');
+    el.classList.toggle('on', addReview);
+  }
+
+  /* ── CRUD ── */
+  function addProblem() {
+    const name  = document.getElementById('prob-name').value.trim();
+    const num   = document.getElementById('prob-num').value.trim();
+    const diff  = document.getElementById('prob-diff').value;
+    const notes = document.getElementById('prob-notes').value.trim();
+    if (!name) { document.getElementById('prob-name').focus(); return; }
+    if (!data[selectedDate]) data[selectedDate] = [];
+    data[selectedDate].push({
+      id: Date.now(),
+      name, num: num || '', diff,
+      confidence: addConfidence,
+      notes,
+      review: addReview,
+      timestamp: Date.now()
+    });
+    document.getElementById('prob-name').value  = '';
+    document.getElementById('prob-num').value   = '';
+    document.getElementById('prob-notes').value = '';
+    addReview = false;
+    document.getElementById('add-review-toggle').classList.remove('on');
+    selectConf(2);
+    saveData(); render();
+  }
+
+  function deleteProblem(date, id) {
+    if (!data[date]) return;
+    data[date] = data[date].filter(p => p.id !== id);
+    if (data[date].length === 0) delete data[date];
+    saveData(); render();
+  }
+
+  function updateProblemField(date, id, field, value) {
+    if (!data[date]) return;
+    const p = data[date].find(p => p.id === id);
+    if (p) { p[field] = value; saveData(); render(); }
+  }
+
+  /* ── Navigation ── */
+  function changeDay(delta) {
+    const d = parseLocalDate(selectedDate);
+    d.setDate(d.getDate() + delta);
+    selectedDate = dateToStr(d);
+    render();
+  }
+
+  function goToday() { selectedDate = todayStr(); render(); }
+
+  /* ── Render ── */
+  function render() {
+    renderDateNav();
+    renderProblems();
+    renderStats();
+    renderReviewQueue();
+    renderActivityLog();
+    document.querySelectorAll('.problem-detail.open').forEach(el => el.classList.remove('open'));
+  }
+
+  function renderDateNav() {
+    const label = selectedDate === todayStr()
+      ? formatDate(selectedDate) + ' · today'
+      : formatDate(selectedDate);
+    document.getElementById('date-display').textContent = label;
+  }
+
+  function renderProblems() {
+    const list  = document.getElementById('problem-list');
+    const probs = data[selectedDate] || [];
+    if (probs.length === 0) {
+      list.innerHTML = '<div class="empty-state">no problems logged for this day</div>';
+      return;
+    }
+    list.innerHTML = probs.map(p => {
+      const confLabel = CONF_LABELS[p.confidence] || '—';
+      const dotClass  = CONF_DOTS[p.confidence] || '';
+      const reviewBadge = p.review ? `<span class="review-chip">📋 review</span>` : '';
+      const notePreview = p.notes
+        ? `<div class="meta-row"><span class="meta-label">Notes</span><span class="meta-value">${escHtml(p.notes.slice(0, 80))}${p.notes.length > 80 ? '…' : ''}</span></div>`
+        : '';
+      const showMeta = (p.confidence || p.notes || p.review);
+
+      return `
+      <div class="problem-item" id="pitem-${p.id}">
+        <div class="problem-main">
+          <span class="problem-num">${p.num ? '#' + p.num : '—'}</span>
+          <span class="problem-name">${escHtml(p.name)}</span>
+          <span class="diff-badge diff-${p.diff}">${p.diff}</span>
+          ${p.confidence ? `<div class="conf-dot ${dotClass}" title="${confLabel}"></div>` : ''}
+          ${reviewBadge}
+          <button class="expand-btn" onclick="toggleDetail('${selectedDate}',${p.id})" title="Details">▾</button>
+          <button class="del-btn" onclick="deleteProblem('${selectedDate}',${p.id})" title="Remove">&#215;</button>
+        </div>
+        ${showMeta && p.notes ? `<div class="problem-meta">${notePreview}</div>` : ''}
+        <div class="problem-detail" id="pdetail-${p.id}">
+          <div class="detail-row">
+            <div class="detail-label">Confidence</div>
+            <div class="detail-conf-pills">
+              ${[1,2,3,4].map(v => `
+                <div class="detail-pill${p.confidence === v ? ' sel-'+v : ''}"
+                     onclick="updateProblemField('${selectedDate}',${p.id},'confidence',${v});renderProblems()">
+                  ${CONF_LABELS[v]}
+                </div>`).join('')}
+            </div>
+          </div>
+          <div class="detail-review-row">
+            <div class="detail-label">Mark for review</div>
+            <div class="review-toggle ${p.review ? 'on' : ''}"
+                 onclick="updateProblemField('${selectedDate}',${p.id},'review',${!p.review});renderProblems()">
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+              <span class="toggle-label">${p.review ? 'In review queue' : 'Off'}</span>
+            </div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Notes / concepts</div>
+            <textarea class="detail-textarea" id="note-${p.id}"
+              placeholder="Sliding window, key insight, edge cases…">${escHtml(p.notes || '')}</textarea>
+          </div>
+          <button class="detail-save-btn" onclick="saveNote('${selectedDate}',${p.id})">Save notes</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function saveNote(date, id) {
+    const val = document.getElementById('note-' + id);
+    if (!val) return;
+    updateProblemField(date, id, 'notes', val.value.trim());
+  }
+
+  function toggleDetail(date, id) {
+    const el = document.getElementById('pdetail-' + id);
+    if (!el) return;
+    el.classList.toggle('open');
+    const btn = el.closest('.problem-item').querySelector('.expand-btn');
+    if (btn) btn.textContent = el.classList.contains('open') ? '▴' : '▾';
+  }
+
+  function renderStats() {
+    let total = 0, easy = 0, medium = 0, hard = 0;
+    Object.values(data).forEach(probs => {
+      probs.forEach(p => {
+        total++;
+        if (p.diff === 'easy')        easy++;
+        else if (p.diff === 'medium') medium++;
+        else                          hard++;
+      });
+    });
+    document.getElementById('s-total').textContent  = total;
+    document.getElementById('s-easy').textContent   = easy;
+    document.getElementById('s-medium').textContent = medium;
+    document.getElementById('s-hard').textContent   = hard;
+  }
+
+  /* ── Review queue ── */
+  function setReviewFilter(f, btn) {
+    reviewFilter = f;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    renderReviewQueue();
+  }
+
+  function renderReviewQueue() {
+    const reviewProbs = [];
+    Object.entries(data).forEach(([date, probs]) => {
+      probs.forEach(p => {
+        if (p.review) reviewProbs.push({ ...p, date });
+      });
+    });
+
+    const section = document.getElementById('review-section');
+    if (reviewProbs.length === 0) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+
+    const filtered = reviewFilter === 'all'
+      ? reviewProbs
+      : reviewProbs.filter(p => String(p.confidence) === reviewFilter);
+
+    const list = document.getElementById('review-list');
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="empty-state">no problems match this filter</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(p => {
+      const dotClass  = CONF_DOTS[p.confidence] || '';
+      const confLabel = CONF_LABELS[p.confidence] || '—';
+      return `
+      <div class="review-item">
+        <div class="conf-dot ${dotClass}" style="margin-top:4px" title="${confLabel}"></div>
+        <div class="review-item-meta">
+          <div class="review-item-top">
+            ${p.num ? `<span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-tertiary)">#${p.num}</span>` : ''}
+            <span class="review-item-name">${escHtml(p.name)}</span>
+            <span class="diff-badge diff-${p.diff}">${p.diff}</span>
+            <span class="review-item-date">${formatDate(p.date)}</span>
+          </div>
+          ${p.notes ? `<div class="review-item-note">${escHtml(p.notes)}</div>` : ''}
+        </div>
+        <button class="del-btn" title="Remove from review"
+          onclick="updateProblemField('${p.date}',${p.id},'review',false)">&#215;</button>
+      </div>`;
+    }).join('');
+  }
+
+  /* ── Activity Log ── */
+  function setActivityFilter(f, btn) {
+    activityFilter = f;
+    document.querySelectorAll('#activity-filters .filter-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    renderActivityLog();
+  }
+
+  function renderActivityLog() {
+    const logEl = document.getElementById('activity-log');
+    const metaEl = document.getElementById('activity-meta');
+    const today = todayStr();
+
+    // Collect all problems sorted by date desc, then by timestamp desc
+    const allEntries = [];
+    Object.entries(data).forEach(([date, probs]) => {
+      probs.forEach(p => {
+        allEntries.push({ ...p, date });
+      });
+    });
+
+    // Filter by difficulty
+    const filtered = activityFilter === 'all'
+      ? allEntries
+      : allEntries.filter(p => p.diff === activityFilter);
+
+    // Sort: most recent date first, within a date by timestamp desc
+    filtered.sort((a, b) => {
+      if (b.date !== a.date) return b.date.localeCompare(a.date);
+      return (b.timestamp || b.id) - (a.timestamp || a.id);
+    });
+
+    if (filtered.length === 0) {
+      logEl.innerHTML = '<div class="activity-empty">no problems logged yet — add your first one above ↑</div>';
+      metaEl.innerHTML = '';
+      return;
+    }
+
+    // Streak calc
+    let streak = 0;
+    const cur = new Date(parseLocalDate(today));
+    while (true) {
+      const key = dateToStr(cur);
+      if ((data[key] || []).length > 0) { streak++; cur.setDate(cur.getDate() - 1); }
+      else break;
+    }
+
+    const daysActive = Object.keys(data).filter(k => (data[k] || []).length > 0).length;
+    metaEl.innerHTML = `
+      <span class="activity-stat">🔥 streak: <strong>${streak}d</strong></span>
+      <span class="activity-stat">📅 active days: <strong>${daysActive}</strong></span>
+      <span class="activity-stat">📝 total: <strong>${allEntries.length}</strong></span>
+    `;
+
+    // Group by date
+    const groups = {};
+    filtered.forEach(p => {
+      if (!groups[p.date]) groups[p.date] = [];
+      groups[p.date].push(p);
+    });
+
+    const sortedDates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
+    logEl.innerHTML = sortedDates.map(date => {
+      const entries = groups[date];
+      const isToday = date === today;
+      const dateLabel = formatDateShort(date);
+
+      const entriesHTML = entries.map(p => {
+        const dotColor = CONF_DOT_COLORS[p.confidence] || 'var(--text-tertiary)';
+        const timeStr = formatTime(p.timestamp || p.id);
+        return `
+        <div class="log-entry" onclick="jumpToDate('${date}')" title="View ${escHtml(p.name)} on ${dateLabel}">
+          <span class="log-time">${timeStr}</span>
+          <span class="log-num">${p.num ? '#' + p.num : '—'}</span>
+          <span class="log-name">${escHtml(p.name)}</span>
+          <span class="diff-badge diff-${p.diff}">${p.diff}</span>
+          ${p.confidence ? `<div class="log-conf-dot" style="background:${dotColor}" title="${CONF_LABELS[p.confidence] || ''}"></div>` : ''}
+          ${p.review ? `<span class="log-review-chip">📋</span>` : ''}
+        </div>`;
+      }).join('');
+
+      return `
+      <div class="log-date-group">
+        <div class="log-date-header">
+          <span class="log-date-label${isToday ? ' today-label' : ''}">${dateLabel}</span>
+          <div class="log-date-line"></div>
+          <span class="log-date-count">${entries.length} problem${entries.length !== 1 ? 's' : ''}</span>
+        </div>
+        <div class="log-entries">${entriesHTML}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function jumpToDate(dateStr) {
+    selectedDate = dateStr;
+    render();
+    document.querySelectorAll('.panel')[1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ── Keyboard ── */
+  document.getElementById('prob-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addProblem();
+  });
+
+  selectConf(2);
+  loadData();
+</script>
+</body>
+</html>
