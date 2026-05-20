@@ -622,6 +622,14 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .activity-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
     .filter-chip {
@@ -633,8 +641,17 @@
       font-size: 11px;
       font-family: 'JetBrains Mono', monospace;
       color: var(--text-secondary);
+      transition: all 0.15s;
     }
+    .filter-chip:hover { background: var(--bg-secondary); }
     .filter-chip.active { background: var(--text-primary); color: var(--bg-primary); border-color: transparent; }
+
+    /* Review filter chip special styling when active */
+    .filter-chip[data-filter="review"].active {
+      background: #22C55E;
+      color: #fff;
+      border-color: transparent;
+    }
 
     .log-date-group { margin-bottom: 1rem; }
     .log-date-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
@@ -647,13 +664,16 @@
       display: flex; align-items: center; gap: 10px; padding: 8px 12px;
       background: var(--bg-secondary); border-radius: var(--radius-md);
       border: 0.5px solid var(--border-light); cursor: pointer;
+      transition: background 0.1s;
     }
+    .log-entry:hover { background: var(--bg-tertiary); }
     .log-time { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-tertiary); min-width: 50px; }
     .log-name { flex: 1; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    .activity-stats-row { display: flex; gap: 16px; margin-bottom: 1rem; }
+    .activity-stats-row { display: flex; gap: 16px; margin-bottom: 1rem; flex-wrap: wrap; }
     .activity-stat { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-secondary); }
     .activity-stat strong { color: var(--text-primary); }
+    .activity-stat.goals-stat strong { color: var(--goal-color); }
 
     /* ── Responsive ── */
     @media (max-width: 620px) {
@@ -758,6 +778,7 @@
         <button class="filter-chip" data-filter="easy" onclick="setActivityFilter('easy',this)">Easy</button>
         <button class="filter-chip" data-filter="medium" onclick="setActivityFilter('medium',this)">Medium</button>
         <button class="filter-chip" data-filter="hard" onclick="setActivityFilter('hard',this)">Hard</button>
+        <button class="filter-chip" data-filter="review" onclick="setActivityFilter('review',this)">⟳ Review</button>
       </div>
     </div>
     <div class="activity-stats-row" id="activity-meta"></div>
@@ -952,17 +973,37 @@
   }
 
   function renderActivityLog() {
-    const solvedOnly = Object.entries(data).flatMap(([date, probs]) => probs.filter(p => !p.isGoal).map(p => ({...p, date})));
-    const filtered = activityFilter === 'all' ? solvedOnly : solvedOnly.filter(p => p.diff === activityFilter);
+    // Only solved problems (not goals)
+    const solvedOnly = Object.entries(data).flatMap(([date, probs]) =>
+      probs.filter(p => !p.isGoal).map(p => ({...p, date}))
+    );
+
+    // Count pending goals across all dates
+    const totalGoals = Object.values(data).flat().filter(p => p.isGoal).length;
+
+    // Apply filter
+    let filtered;
+    if (activityFilter === 'review') {
+      filtered = solvedOnly.filter(p => p.review);
+    } else if (activityFilter === 'all') {
+      filtered = solvedOnly;
+    } else {
+      filtered = solvedOnly.filter(p => p.diff === activityFilter);
+    }
     
     filtered.sort((a, b) => b.timestamp - a.timestamp);
     
     const groups = {};
     filtered.forEach(p => { if(!groups[p.date]) groups[p.date] = []; groups[p.date].push(p); });
 
+    // Review count for meta display
+    const reviewCount = solvedOnly.filter(p => p.review).length;
+
     document.getElementById('activity-meta').innerHTML = `
       <span class="activity-stat">📅 active days: <strong>${Object.keys(groups).length}</strong></span>
       <span class="activity-stat">📝 total solved: <strong>${solvedOnly.length}</strong></span>
+      <span class="activity-stat goals-stat">🎯 pending goals: <strong>${totalGoals}</strong></span>
+      <span class="activity-stat">⟳ for review: <strong>${reviewCount}</strong></span>
     `;
 
     document.getElementById('activity-log').innerHTML = Object.keys(groups).sort().reverse().map(date => `
@@ -978,11 +1019,12 @@
               <span class="log-time">${formatTime(p.timestamp)}</span>
               <span class="log-name">${escHtml(p.name)}</span>
               <span class="diff-badge diff-${p.diff}">${p.diff}</span>
+              ${p.review ? `<span class="review-chip">Review</span>` : ''}
             </div>
           `).join('')}
         </div>
       </div>
-    `).join('') || '<div class="empty-state">No solved problems in log</div>';
+    `).join('') || '<div class="empty-state">' + (activityFilter === 'review' ? 'No problems marked for review' : 'No solved problems in log') + '</div>';
   }
 
   function jumpToDate(d) { selectedDate = d; render(); window.scrollTo({top: 0, behavior: 'smooth'}); }
