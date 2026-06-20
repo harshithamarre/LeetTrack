@@ -63,6 +63,16 @@ LeetTrack helps developers track solved problems, maintain review lists, set fut
 - Browser LocalStorage API
 
 ---
+
+### 🔮 Future Improvements
+- Export/Import progress data
+- Streak tracking
+- Topic-wise categorization
+- Search and sorting
+- Cloud synchronization
+- User authentication
+- LeetCode API integration
+
 ### Clone Repository
 
 ```bash
